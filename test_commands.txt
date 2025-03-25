@@ -1,0 +1,24 @@
+list ports
+addDev DHT11 2 0
+list ports
+list Sensor
+turnON 2
+readSensor 0
+turnOFF 2
+rmDev 2
+addDev LCD 0 0
+turnON 0
+printDisplay 0 Hello World
+turnOFF 0
+addDev Bluetooth 3 0
+turnON 3
+writeWireless 0 Test Message
+readWireless 0
+turnOFF 3
+addDev SparkFunMD 1 0
+turnON 1
+setMotorSpeed 0 100
+turnOFF 1
+rmDev 1
+addDev BME280 0 1
+exit
