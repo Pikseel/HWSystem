@@ -1,49 +1,71 @@
-# Makefile for CSE222 Homework 3 Java project
-# Compatible with macOS, assumes JDK 11 and source files in src/
+# Compiler and flags
+JC = javac
+JFLAGS = -d build -sourcepath src
+JDOC = javadoc
+JDOCFLAGS = -d docs -sourcepath src -subpackages .
 
 # Directories
 SRC_DIR = src
 BUILD_DIR = build
 DOCS_DIR = docs
+LOG_DIR = logs
 
-# Java compiler and runtime
-JAVAC = javac
-JAVA = java
-JAVADOC = javadoc
+# Configurable variables (can be overridden via command line, e.g., make CONFIG_FILE=custom.txt)
+CONFIG_FILE ?= test/config1.txt
+LOG_DIR ?= logs
 
-# Source files
-SOURCES = $(wildcard $(SRC_DIR)/*.java)
+# List of source files
+SOURCES = \
+    $(SRC_DIR)/Protocol.java \
+    $(SRC_DIR)/AbstractProtocol.java \
+    $(SRC_DIR)/Device.java \
+    $(SRC_DIR)/State.java \
+    $(SRC_DIR)/I2C.java \
+    $(SRC_DIR)/SPI.java \
+    $(SRC_DIR)/OneWire.java \
+    $(SRC_DIR)/UART.java \
+    $(SRC_DIR)/DHT11.java \
+    $(SRC_DIR)/BME280.java \
+    $(SRC_DIR)/MPU6050.java \
+    $(SRC_DIR)/GY951.java \
+    $(SRC_DIR)/LCD.java \
+    $(SRC_DIR)/OLED.java \
+    $(SRC_DIR)/Bluetooth.java \
+    $(SRC_DIR)/Wifi.java \
+    $(SRC_DIR)/PCA9685.java \
+    $(SRC_DIR)/SparkFunMD.java \
+    $(SRC_DIR)/HWSystem.java \
+    $(SRC_DIR)/Main.java
 
 # Default target
-all: $(BUILD_DIR) compile
+all: compile
 
-re: clean all
-
-# Create build directory
-$(BUILD_DIR):
-	mkdir -p $(BUILD_DIR)
-
-# Compile all Java files together
+# Compile all Java files
 compile: $(SOURCES)
-	$(JAVAC) -d $(BUILD_DIR) -sourcepath $(SRC_DIR) $(SOURCES)
+	@mkdir -p $(BUILD_DIR)
+	$(JC) $(JFLAGS) $(SOURCES)
 
-# Run the program (requires config file and log directory as arguments)
-run: all
-	@if [ -z "$(CONFIG_FILE)" ] || [ -z "$(LOG_DIR)" ]; then \
-		echo "Usage: make run CONFIG_FILE=<path_to_config> LOG_DIR=<path_to_log_dir>"; \
-		exit 1; \
-	else \
-		$(JAVA) -cp $(BUILD_DIR) Main $(CONFIG_FILE) $(LOG_DIR); \
-	fi
+# Generate Javadoc
+javadoc:
+	@mkdir -p $(DOCS_DIR)
+	$(JDOC) $(JDOCFLAGS) $(SOURCES)
 
-# Generate JavaDoc documentation
-javadoc: $(SOURCES)
-	mkdir -p $(DOCS_DIR)
-	$(JAVADOC) -d $(DOCS_DIR) -sourcepath $(SRC_DIR) $(SOURCES)
+# Create or recreate logs directory
+logs:
+	@rm -rf $(LOG_DIR)
+	@mkdir -p $(LOG_DIR)
+
+# Run the program with CONFIG_FILE and LOG_DIR
+run: compile
+	@if [ ! -d $(LOG_DIR) ]; then mkdir -p $(LOG_DIR); fi
+	@if [ ! -f $(CONFIG_FILE) ]; then echo "Error: $(CONFIG_FILE) not found"; exit 1; fi
+	java -cp $(BUILD_DIR) -DCONFIG_FILE=$(CONFIG_FILE) -DLOG_DIR=$(LOG_DIR) Main
 
 # Clean build and docs directories
 clean:
-	rm -rf $(BUILD_DIR) $(DOCS_DIR)
+	rm -rf $(BUILD_DIR) $(DOCS_DIR) $(LOG_DIR)
 
-# Phony targets
-.PHONY: all compile run javadoc clean
+# Rebuild: clean, recreate logs, then compile
+re: clean logs compile
+
+.PHONY: all compile javadoc logs run clean re

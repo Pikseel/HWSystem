@@ -1,75 +1,41 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
-    public static void main(String[] args) {
-        if (args.length < 2) {
-            System.err.println("Usage: java Main <config_file> <log_directory>");
+    public static void main(String[] args) throws IOException {
+        String configFile = System.getProperty("CONFIG_FILE");
+        String logDir = System.getProperty("LOG_DIR");
+        if (configFile == null || logDir == null) {
+            System.err.println("CONFIG_FILE and LOG_DIR must be specified");
             return;
         }
-        String configFile = args[0];
-        String logDirectory = args[1];
 
+        List<Protocol> ports = new ArrayList<>();
         Map<String, Integer> maxDevices = new HashMap<>();
-        List<Protocol> ports = parseConfig(configFile, maxDevices);
-        if (ports == null) {
-            return;
+        try (BufferedReader br = new BufferedReader(new FileReader(configFile))) {
+            String line = br.readLine();
+            String[] portNames = line.split(":")[1].split(",");
+            for (int i = 0; i < portNames.length; i++) {
+                String name = portNames[i].trim();
+                switch (name) {
+                    case "I2C": ports.add(new I2C(logDir, i)); break;
+                    case "SPI": ports.add(new SPI(logDir, i)); break;
+                    case "OneWire": ports.add(new OneWire(logDir, i)); break;
+                    case "UART": ports.add(new UART(logDir, i)); break;
+                }
+            }
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(":");
+                maxDevices.put(parts[0].trim(), Integer.parseInt(parts[1].trim()));
+            }
         }
 
         HWSystem system = new HWSystem(ports, maxDevices);
-        List<String> commands = new ArrayList<>();
-        Scanner scanner = new Scanner(System.in);
-
-        while (scanner.hasNextLine()) {
-            String command = scanner.nextLine().trim();
-            if (command.equals("exit")) {
-                break;
-            }
-            commands.add(command);
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+        String command;
+        while ((command = input.readLine()) != null && !command.equals("exit")) {
+            system.executeCommand(command);
         }
-        scanner.close();
-
-        Iterator<String> cmdIterator = commands.iterator();
-        while (cmdIterator.hasNext()) {
-            system.executeCommand(cmdIterator.next());
-        }
-        System.out.println("Exiting...");
-
-        Iterator<Protocol> portIterator = ports.iterator();
-        while (portIterator.hasNext()) {
-            portIterator.next().writeLog(logDirectory);
-        }
-    }
-
-    private static List<Protocol> parseConfig(String configFile, Map<String, Integer> maxDevices) {
-        try (Scanner scanner = new Scanner(new File(configFile))) {
-            List<Protocol> ports = new ArrayList<>();
-            String[] protocolLine = scanner.nextLine().split(":")[1].split(",");
-            for (int i = 0; i < protocolLine.length; i++) {
-                String proto = protocolLine[i].trim();
-                switch (proto) {
-                    case "I2C": ports.add(new I2C(i)); break;
-                    case "SPI": ports.add(new SPI(i)); break;
-                    case "OneWire": ports.add(new OneWire(i)); break;
-                    case "UART": ports.add(new UART(i)); break;
-                    default:
-                        System.err.println("Unknown protocol in config: " + proto);
-                        return null;
-                }
-            }
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine().trim();
-                String[] parts = line.split(":");
-                String key = parts[0].replace("# of ", "").trim();
-                maxDevices.put(key, Integer.parseInt(parts[1].trim()));
-            }
-            return ports;
-        } catch (FileNotFoundException e) {
-            System.err.println("Configuration file not found: " + configFile);
-            return null;
-        } catch (Exception e) {
-            System.err.println("Error parsing config file: " + e.getMessage());
-            return null;
-        }
+        system.close();
     }
 }

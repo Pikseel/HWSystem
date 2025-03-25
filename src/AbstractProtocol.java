@@ -1,16 +1,17 @@
-import java.io.*;
-import java.util.*;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Stack;
 
 abstract class AbstractProtocol implements Protocol {
-    private Stack<String> log = new Stack<>();
+    protected Device occupyingDevice;
     private String protocolName;
-    private int portID;
-    private Device occupyingDevice = null;
+    private String logFile;
+    private Stack<String> logEntries = new Stack<>();
 
-    public AbstractProtocol(String protocolName, int portID) {
+    public AbstractProtocol(String protocolName, String logDir, int portID) {
         this.protocolName = protocolName;
-        this.portID = portID;
-        log.push("Port Opened.");
+        this.logFile = logDir + "/" + protocolName + "_" + portID + ".log";
+        logEntries.push("Port Opened.");
     }
 
     @Override
@@ -19,27 +20,8 @@ abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
-    public String read() {
-        System.out.println("read() called for " + protocolName + "_" + portID); // Debug
-        log.push("Reading.");
-        return "";
-    }
-
-    @Override
-    public void write(String data) {
-        log.push("Writing \"" + data + "\".");
-    }
-
-    @Override
-    public void writeLog(String logDirectory) {
-        String fileName = protocolName + "_" + portID + ".log";
-        try (PrintWriter writer = new PrintWriter(new File(logDirectory, fileName))) {
-            while (!log.isEmpty()) {
-                writer.println(log.pop());
-            }
-        } catch (FileNotFoundException e) {
-            System.err.println("Error writing log file " + fileName + ": " + e.getMessage());
-        }
+    public void setOccupyingDevice(Device dev) {
+        occupyingDevice = dev;
     }
 
     @Override
@@ -48,7 +30,24 @@ abstract class AbstractProtocol implements Protocol {
     }
 
     @Override
-    public void setOccupyingDevice(Device device) {
-        this.occupyingDevice = device;
+    public void write(String data) {
+        logEntries.push("Writing \"" + data + "\".");
+    }
+
+    @Override
+    public String read() {
+        logEntries.push("Reading.");
+        return "Some Data";
+    }
+
+    @Override
+    public void close() {
+        try (FileWriter writer = new FileWriter(logFile)) {
+            while (!logEntries.isEmpty()) {
+                writer.write(logEntries.pop() + "\n");
+            }
+        } catch (IOException e) {
+            System.err.println("Error writing log: " + e.getMessage());
+        }
     }
 }

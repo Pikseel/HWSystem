@@ -1,32 +1,15 @@
-abstract class Device {
-    protected Protocol protocol;
-    protected State state = State.OFF;
-
-    public void setProtocol(Protocol protocol) {
-        this.protocol = protocol;
-    }
-
-    public Protocol getProtocol() {
-        return protocol;
-    }
-
-    public State getState() {
-        return state;
-    }
-
-    public void turnON() {
-        state = State.ON;
-        protocol.write("turnON");
-        System.out.println(getName() + ": Turning ON.");
-    }
-
-    public void turnOFF() {
-        state = State.OFF;
-        protocol.write("turnOFF");
-        System.out.println(getName() + ": Turning OFF.");
-    }
-
-    public abstract String getName();
-
-    public abstract String getDevType();
+interface Device {
+    String getName();
+    String getDevType();
+    String getSensType(); // Returns "" if not a sensor
+    State getState();
+    void turnON();
+    void turnOFF();
+    void setProtocol(Protocol protocol);
+    Protocol getProtocol();
+    void print(String data);
+    void write(String data);
+    String read();
+    void setSpeed(String speed);
+    String data2String(); // Returns "" if not a sensor
 }

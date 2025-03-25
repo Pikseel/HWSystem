@@ -1,5 +1,5 @@
 class SPI extends AbstractProtocol {
-    public SPI(int portID) {
-        super("SPI", portID);
+    public SPI(String logDir, int portID) {
+        super("SPI", logDir, portID);
     }
 }

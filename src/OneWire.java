@@ -1,5 +1,5 @@
 class OneWire extends AbstractProtocol {
-    public OneWire(int portID) {
-        super("OneWire", portID);
+    public OneWire(String logDir, int portID) {
+        super("OneWire", logDir, portID);
     }
 }

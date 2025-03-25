@@ -1,8 +1,8 @@
 interface Protocol {
     String getProtocolName();
-    String read();
-    void write(String data);
-    void writeLog(String logDirectory);
+    void setOccupyingDevice(Device dev);
     Device getOccupyingDevice();
-    void setOccupyingDevice(Device device);
+    void write(String data);
+    String read();
+    void close();
 }

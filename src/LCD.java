@@ -1,10 +1,22 @@
-class LCD extends Display {
+class LCD implements Device {
+    private Protocol protocol;
+    private State state = State.OFF;
+
     public LCD(Protocol protocol) {
-        super(protocol);
+        this.protocol = protocol;
     }
 
-    @Override
-    public String getName() {
-        return "LCD";
-    }
+    @Override public String getName() { return "LCD"; }
+    @Override public String getDevType() { return "Display"; }
+    @Override public String getSensType() { return ""; }
+    @Override public State getState() { return state; }
+    @Override public void turnON() { state = State.ON; protocol.write("turnON"); System.out.println("LCD: Turning ON."); }
+    @Override public void turnOFF() { state = State.OFF; protocol.write("turnOFF"); System.out.println("LCD: Turning OFF."); }
+    @Override public void setProtocol(Protocol protocol) { this.protocol = protocol; }
+    @Override public Protocol getProtocol() { return protocol; }
+    @Override public void print(String data) { protocol.write(data); System.out.println("LCD: Printing \"" + data + "\"."); }
+    @Override public void write(String data) {}
+    @Override public String read() { return ""; }
+    @Override public void setSpeed(String speed) {}
+    @Override public String data2String() { return ""; }
 }
