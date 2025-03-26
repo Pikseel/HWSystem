@@ -3,44 +3,45 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * UART protocol implementation.
- */
-public class UART implements Protocol {
-    private List<String> logEntries = new ArrayList<>();
-    private String logDir;
-    private int portID;
+public class UART implements Protocol
+{
+	private List<String>	logEntries = new ArrayList<>();
+	private String	logDir;
+	private int		portID;
 
-    public UART(String logDir, int portID) {
-        this.logDir = logDir;
-        this.portID = portID;
-        logEntries.add("Port Opened.");
-    }
+	public	UART(String logDir, int portID)
+	{
+		this.logDir = logDir;
+		this.portID = portID;
+		logEntries.add("Port Opened.");
+	}
 
-    @Override
-    public String getProtocolName() {
-        return "UART";
-    }
+	@Override public String	getProtocolName()
+	{
+		return ("UART");
+	}
 
-    @Override
-    public String read() {
-        logEntries.add("Reading.");
-        return "Some Data";
-    }
+	@Override public String	read()
+	{
+		logEntries.add("Reading.");
+		return ("Some Data");
+	}
 
-    @Override
-    public void write(String data) {
-        logEntries.add("Writing \"" + data + "\".");
-    }
+	@Override public void	write(String data)
+	{
+		logEntries.add("Writing \"" + data + "\".");
+	}
 
-    @Override
-    public void close() {
-        try (FileWriter writer = new FileWriter(logDir + "/" + getProtocolName() + "_" + portID + ".log")) {
-            for (int i = logEntries.size() - 1; i >= 0; i--) {
-                writer.write(logEntries.get(i) + "\n");
-            }
-        } catch (IOException e) {
-            System.err.println("Error writing log for " + getProtocolName() + "_" + portID);
-        }
-    }
+	@Override public void	close()
+	{
+		try (FileWriter writer = new FileWriter(logDir + "/" + getProtocolName() + "_" + portID + ".log"))
+		{
+			for (int i = logEntries.size() - 1; i >= 0; i--)
+				writer.write(logEntries.get(i) + "\n");
+		}
+		catch (IOException e)
+		{
+			System.err.println("Error writing log for " + getProtocolName() + "_" + portID);
+		}
+	}
 }

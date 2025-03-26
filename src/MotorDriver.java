@@ -1,15 +1,14 @@
-/**
- * Abstract base class for motor drivers.
- */
-public abstract class MotorDriver extends Device {
-    public MotorDriver(Protocol protocol) {
-        super(protocol);
-    }
+public abstract class MotorDriver extends Device
+{
+	public  MotorDriver(Protocol protocol)
+	{
+		super(protocol);
+	}
 
-    @Override
-    public String getDevType() {
-        return "MotorDriver";
-    }
+	@Override public String getDevType()
+	{
+		return ("MotorDriver");
+	}
 
-    public abstract void setMotorSpeed(int speed);
+	public abstract void    setMotorSpeed(int speed);
 }

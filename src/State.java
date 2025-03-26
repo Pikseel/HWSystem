@@ -1,6 +1,4 @@
-/**
- * Enum representing device states.
- */
-public enum State {
-    ON, OFF
+public enum State
+{
+	ON, OFF
 }
