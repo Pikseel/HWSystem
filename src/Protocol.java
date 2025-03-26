@@ -1,8 +1,9 @@
-interface Protocol {
+/**
+ * Interface for communication protocols.
+ */
+public interface Protocol {
     String getProtocolName();
-    void setOccupyingDevice(Device dev);
-    Device getOccupyingDevice();
-    void write(String data);
     String read();
+    void write(String input);
     void close();
 }

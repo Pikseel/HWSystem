@@ -1,41 +1,34 @@
-import java.util.*;
 import java.io.*;
+import java.util.*;
 
+/**
+ * Main class to run the HWSystem, reading commands and config from environment variables.
+ */
 public class Main {
     public static void main(String[] args) throws IOException {
-        String configFile = System.getProperty("CONFIG_FILE");
-        String logDir = System.getProperty("LOG_DIR");
+        String configFile = System.getenv("CONFIG_FILE");
+        String logDir = System.getenv("LOG_DIR");
         if (configFile == null || logDir == null) {
-            System.err.println("CONFIG_FILE and LOG_DIR must be specified");
+            System.err.println("CONFIG_FILE and LOG_DIR must be set");
             return;
         }
 
-        List<Protocol> ports = new ArrayList<>();
-        Map<String, Integer> maxDevices = new HashMap<>();
-        try (BufferedReader br = new BufferedReader(new FileReader(configFile))) {
-            String line = br.readLine();
-            String[] portNames = line.split(":")[1].split(",");
-            for (int i = 0; i < portNames.length; i++) {
-                String name = portNames[i].trim();
-                switch (name) {
-                    case "I2C": ports.add(new I2C(logDir, i)); break;
-                    case "SPI": ports.add(new SPI(logDir, i)); break;
-                    case "OneWire": ports.add(new OneWire(logDir, i)); break;
-                    case "UART": ports.add(new UART(logDir, i)); break;
-                }
-            }
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(":");
-                maxDevices.put(parts[0].trim(), Integer.parseInt(parts[1].trim()));
-            }
+        HWSystem system = new HWSystem(configFile, logDir);
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+        Queue<String> commands = new LinkedList<>(); // Queue for commands
+        String command;
+
+        // Store commands in Queue until 'exit'
+        while ((command = input.readLine()) != null) {
+            commands.add(command);
+            if (command.equals("exit")) break;
         }
 
-        HWSystem system = new HWSystem(ports, maxDevices);
-        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
-        String command;
-        while ((command = input.readLine()) != null && !command.equals("exit")) {
-            system.executeCommand(command);
+        // Execute commands after 'exit'
+        while (!commands.isEmpty()) {
+            system.executeCommand(commands.poll());
+            if (!commands.isEmpty()) System.out.println(); // Single newline between outputs
         }
-        system.close();
+        system.closePorts();
     }
 }

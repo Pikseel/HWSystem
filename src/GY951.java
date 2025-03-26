@@ -1,22 +1,41 @@
-class GY951 implements Device {
-    private Protocol protocol;
-    private State state = State.OFF;
-
+/**
+ * GY951 IMU sensor implementation.
+ */
+public class GY951 extends IMUSensor {
     public GY951(Protocol protocol) {
-        this.protocol = protocol;
+        super(protocol);
+        if (!protocol.getProtocolName().equals("SPI") && !protocol.getProtocolName().equals("UART"))
+            throw new IllegalArgumentException("GY951 requires SPI or UART protocol.");
     }
 
-    @Override public String getName() { return "GY951"; }
-    @Override public String getDevType() { return "Sensor"; }
-    @Override public String getSensType() { return "IMUSensor"; }
-    @Override public State getState() { return state; }
-    @Override public void turnON() { state = State.ON; protocol.write("turnON"); System.out.println("GY951: Turning ON."); }
-    @Override public void turnOFF() { state = State.OFF; protocol.write("turnOFF"); System.out.println("GY951: Turning OFF."); }
-    @Override public void setProtocol(Protocol protocol) { this.protocol = protocol; }
-    @Override public Protocol getProtocol() { return protocol; }
-    @Override public void print(String data) {}
-    @Override public void write(String data) {}
-    @Override public String read() { return protocol.read(); }
-    @Override public void setSpeed(String speed) {}
-    @Override public String data2String() { return "Gyro: 100deg/s"; }
+    @Override
+    public void turnOn() {
+        System.out.println("GY951: Turning ON.");
+        protocol.write("turnON");
+        state = State.ON;
+    }
+
+    @Override
+    public void turnOff() {
+        System.out.println("GY951: Turning OFF.");
+        protocol.write("turnOFF");
+        state = State.OFF;
+    }
+
+    @Override
+    public String getName() {
+        return "GY951";
+    }
+
+    @Override
+    public float getAccel() {
+        protocol.read();
+        return 1.00f; // HW3 constant
+    }
+
+    @Override
+    public float getRot() {
+        protocol.read();
+        return 0.50f; // HW3 constant
+    }
 }

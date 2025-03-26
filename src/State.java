@@ -1,4 +1,6 @@
-enum State {
-    ON,
-    OFF
+/**
+ * Enum representing device states.
+ */
+public enum State {
+    ON, OFF
 }
