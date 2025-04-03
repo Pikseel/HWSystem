@@ -1,0 +1,11 @@
+list ports
+addDev DHT11 2 0
+list ports
+list Sensor
+readSensor 0
+turnON 2
+readSensor 0
+rmDev 2
+turnOFF 2
+rmDev 2
+exit

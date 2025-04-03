@@ -5,17 +5,17 @@ public abstract class WirelessIO extends Device
 		super(protocol);
 	}
 
-	@Override public String	getDevType()
+	@Override public String	getDevType()	// Return the type of the device
 	{
 		return ("WirelessIO");
 	}
 
-	public void	sendData(String data)
+	public void	sendData(String data)		// Send data to the device
 	{
 		protocol.write(data);
 	}
 
-	public String	recvData()
+	public String	recvData()				// Receive data from the device
 	{
 		return protocol.read();
 	}

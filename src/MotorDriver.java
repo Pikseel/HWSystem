@@ -5,7 +5,7 @@ public abstract class MotorDriver extends Device
 		super(protocol);
 	}
 
-	@Override public String getDevType()
+	@Override public String getDevType()	// Return the type of the device
 	{
 		return ("MotorDriver");
 	}

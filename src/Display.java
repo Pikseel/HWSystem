@@ -5,12 +5,12 @@ public abstract class Display extends Device
         super(protocol);
     }
 
-    @Override public String getDevType()
+    @Override public String getDevType()    // Return the type of the device
     {
         return ("Display");
     }
 
-    public void printData(String data)
+    public void printData(String data)      // Imitate the printing of data
     {
         protocol.write(data);
         System.out.println(getName() + ": Printing \"" + data + "\".");

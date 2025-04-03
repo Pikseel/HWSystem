@@ -1,6 +1,10 @@
 import java.util.*;
 import java.io.*;
-
+// Got a little help figuring out how to use the BufferedReader and FileReader classes and 
+// why would using them could benefit me. Also got help with the ArrayList and List classes
+// because i was confused about maintaining complexity as O(c.n) (O(1) for lists) but i failed.
+// That's why i used hashmap which recommended by AI. Got help abpout exceptions
+// was challenging. So i got help because i didn't know what to throw in some cases and how to thro
 public class HWSystem
 {
 	private List<Protocol>				ports;			// ArrayList for O(1) access

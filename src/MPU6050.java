@@ -1,38 +1,38 @@
 public class MPU6050 extends IMUSensor
 {
 	public	MPU6050(Protocol protocol)
-	{
+	{	// I2C protocol is required for MPU6050
 		super(protocol);
 		if (!protocol.getProtocolName().equals("I2C"))
 			throw new IllegalArgumentException("MPU6050 requires I2C protocol.");
 	}
 
-	@Override public void	turnOn()
+	@Override public void	turnOn()	// Set the state ON and write the necessary prompts
 	{
 		System.out.println("MPU6050: Turning ON.");
 		protocol.write("turnON");
 		state = State.ON;
 	}
 
-	@Override public void	turnOff()
+	@Override public void	turnOff()	// Set the state OFF and write the necessary prompts
 	{
 		System.out.println("MPU6050: Turning OFF.");
 		protocol.write("turnOFF");
 		state = State.OFF;
 	}
 
-	@Override public String	getName()
+	@Override public String	getName()	// Return the name of the device
 	{
 		return ("MPU6050");
 	}
 
-	@Override public float	getAccel()
+	@Override public float	getAccel()	// Return the constant value from the sensor
 	{
-		protocol.read();
+		protocol.read();	// Print to protocol spesific message to file
 		return (1.00f);
 	}
 
-	@Override public float	getRot()
+	@Override public float	getRot()	// Return the constant value from the sensor
 	{
 		protocol.read();
 		return (0.50f);

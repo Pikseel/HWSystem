@@ -1,0 +1,1 @@
+make run CONFIG_FILE=test/config1.txt LOG_DIR=logs < test/scenario1.txt
